@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL - Draw and Transform</title>
+    <link rel="stylesheet" href="webgl-tutorials.css">
+    <style>
+        #modeButtons {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 3;
+        }
+        #modeButtons button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        #objectSelect {
+            position: absolute;
+            top: 40px;
+            left: 10px;
+            z-index: 3;
+            padding: 5px;
+            font-size: 14px;
+            display: none; /* Ẩn mặc định */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="modeButtons">
+        <button id="drawFBtn">Draw F</button>
+        <button id="movingShapesBtn">Moving Shapes</button>
+    </div>
+    <select id="objectSelect">
+        <option value="rect">Rectangle</option>
+        <option value="triangle">Triangle</option>
+    </select>
+    <div id="uiContainer">
+        <div id="ui">
+            <div id="x"></div>
+            <div id="y"></div>
+            <div id="angle"></div>
+            <div id="scaleX"></div>
+            <div id="scaleY"></div>
+        </div>
+    </div>
+
+    <!-- Vertex Shader -->
+    <script id="vertex-shader-2d" type="x-shader/x-vertex">
+        attribute vec2 a_position;
+
+        uniform vec2 u_resolution;
+        uniform vec2 u_translation;
+        uniform vec2 u_rotation;
+        uniform vec2 u_scale;
+
+        void main() {
+            // Apply scaling
+            vec2 scaledPosition = a_position * u_scale;
+
+            // Apply rotation
+            vec2 rotatedPosition = vec2(
+                scaledPosition.x * u_rotation.y + scaledPosition.y * u_rotation.x,
+                scaledPosition.y * u_rotation.y - scaledPosition.x * u_rotation.x
+            );
+
+            // Apply translation
+            vec2 position = rotatedPosition + u_translation;
+
+            // Convert from pixels to clip space
+            vec2 zeroToOne = position / u_resolution;
+            vec2 zeroToTwo = zeroToOne * 2.0;
+            vec2 clipSpace = zeroToTwo - 1.0;
+
+            gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+        }
+    </script>
+
+    <!-- Fragment Shader -->
+    <script id="fragment-shader-2d" type="x-shader/x-fragment">
+        precision mediump float;
+
+        uniform vec4 u_color;
+
+        void main() {
+            gl_FragColor = u_color;
+        }
+    </script>
+
+    <script src="webgl-utils.js"></script>
+    <script src="webgl-lessons-ui.js"></script>
+    <script src="script.js"></script>
+
+    <div>
+        <center>
+            <h3> Nguyễn Hoàng Gia An - 22520021 </h3>
+        </center>
+    </div>
+</body>
+</html>
